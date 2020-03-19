@@ -1,83 +1,53 @@
-from llvmlite import ir
+from rply.token import BaseBox
 
-class Variable():
-    def __init__(self, builder, module, value):
-        self.builder = builder
-        self.module = module
+
+class Var(BaseBox):
+    def __init__(self, value):
         self.value = value
 
     def eval(self):
-        return ir.Constant(
-              ir.IntType(1)
-            , int(self.value)
-            )
+        return self.value
 
-class UnaryOp():
-    def __init__(self, builder, module, argument):
-        self.builder = builder
-        self.module = module
+    def show(self):
+        print(self.__class__.__name__)
+
+
+class BinaryOp(BaseBox):
+    def __init__(self, left, right):
+        self.left = left
+        self.right = right
+
+
+class UnaryOp:
+    def __init__(self, argument):
         self.argument = argument
 
-class BinaryOp():
-    def __init__(self, builder, module, left, right):
-        self.builder = builder
-        self.module = module
-        self.left = left
-        self.right = right
 
-class TernaryOp():
-    def __init__(self, builder, module, left, middle, right):
-        self.builder = builder
-        self.module = module
-        self.left = left
-        self.middle = middle
-        self.right = right
-
-class Negatiation(UnaryOp):
+class Negation(UnaryOp):
     def eval(self):
-        return self.builder.negatiation(
-              self.argument.eval()
-            )
+        return self.argument.eval()
 
-class Conjunction(BinaryOp):
-    def eval(self):
-        return self.builder.conjunction(
-              self.left.eval()
-            , self.right.eval()
-            )
 
-class Disjunction(BinaryOp):
+class Imp(BinaryOp):
     def eval(self):
-        return self.builder.disjunction(
-              self.left.eval()
-            , self.right.eval()
-            )
+        return self.left, self.right
 
-class Implication(BinaryOp):
+
+class Disj(BinaryOp):
     def eval(self):
-        return self.builder.implication(
-              self.left.eval()
-            , self.right.eval()
-            )
+        return self.left.eval(), self.right.eval()
+
+
+class Conj(BinaryOp):
+    def eval(self):
+        return self.left.eval(), self.right.eval()
+
 
 class Forall(BinaryOp):
     def eval(self):
-        return self.builder.forall(
-              self.left.eval()
-            , self.right.eval()
-            )
+        return self.left.eval(), self.right.eval()
+
 
 class Exists(BinaryOp):
     def eval(self):
-        return self.builder.exists(
-              self.left.eval()
-            , self.right.eval()
-            )
-
-class Substitution(TernaryOp):
-    def eval(self):
-        return self.builder.substitution(
-              self.left.eval()
-            , self.middle.eval()
-            , self.right.eval()
-            )
+        return self.left.eval(), self.right.eval()
