@@ -3,6 +3,10 @@ from parsec import parser
 import ast
 
 
+def pprint(a, b):
+    print(f"{', '.join(map(lambda x: x.show(), a))} |- {', '.join(map(lambda x: x.show(), b))}")
+
+
 # all(a, resovle(...) and all(b, resolve(...)) -> true, else -> false)
 def resolve(a, b):
 
@@ -10,7 +14,7 @@ def resolve(a, b):
         return True
 
     if all(map(lambda x: isinstance(x, ast.Var), a)) and all(map(lambda x: isinstance(x, ast.Var), b)):
-        print(f'{a} |- {b}')
+        pprint(a, b)
         return False
 
     for i in a:
@@ -23,7 +27,7 @@ def resolve(a, b):
                 b_next = b.copy()
                 b_next.extend(r)
                 if not resolve(a_next, b_next):
-                    print(f'{a} |- {b}')
+                    pprint(a, b)
                     return False
     
     for i in b:
@@ -36,7 +40,7 @@ def resolve(a, b):
                 b_next.extend(r)
 
                 if not resolve(a_next, b_next):
-                    print(f'{a} |- {b}')
+                    pprint(a, b)
                     return False
     
     return True

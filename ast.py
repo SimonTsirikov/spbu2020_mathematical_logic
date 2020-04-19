@@ -18,7 +18,7 @@ class BinaryOp(BaseBox):
         self.right = right
 
     def show(self):
-        return f'{self.__class__.__name__}({self.left},{self.right})'
+        return f'{self.__class__.__name__}({self.left.show()},{self.right.show()})'
 
 
 class UnaryOp:
@@ -26,7 +26,7 @@ class UnaryOp:
         self.argument = argument
 
     def show(self):
-        return f'{self.__class__.__name__}({self.argument})'
+        return f'{self.__class__.__name__}({self.argument.show()})'
 
 
 class Negation(UnaryOp):
