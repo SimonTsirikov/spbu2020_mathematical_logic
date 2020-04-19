@@ -9,7 +9,7 @@ class Var(BaseBox):
         return self.value
 
     def show(self):
-        print(self.__class__.__name__)
+        return f'{self.__class__.__name__} {self.value}'
 
 
 class BinaryOp(BaseBox):
@@ -17,30 +17,59 @@ class BinaryOp(BaseBox):
         self.left = left
         self.right = right
 
+    def show(self):
+        return f'{self.__class__.__name__}({self.left},{self.right})'
 
+# change str + str tp f''
 class UnaryOp:
     def __init__(self, argument):
         self.argument = argument
 
+    def show(self):
+        return f'{self.__class__.__name__}({self.argument})'
 
 class Negation(UnaryOp):
     def eval(self):
         return self.argument.eval()
+
+    def introduce(self):
+        return [([], [self.argument])]
+
+    def eliminate(self):
+        return [([self.argument], [])]
 
 
 class Imp(BinaryOp):
     def eval(self):
         return self.left, self.right
 
+    def introduce(self):
+        return [([], [self.left]), ([self.right], [])]
+
+    def eliminate(self):
+        return [([self.left], [self.right])]
+
 
 class Disj(BinaryOp):
     def eval(self):
         return self.left.eval(), self.right.eval()
 
+    def introduce(self):
+        return [([self.left], []), ([self.right], [])]
+
+    def eliminate(self):
+        return [([], [self.left, self.right])]
+
 
 class Conj(BinaryOp):
     def eval(self):
         return self.left.eval(), self.right.eval()
+
+    def introduce(self):
+        return [([self.left, self.right], [])]
+
+    def eliminate(self):
+        return [([], [self.left]), ([], [self.right])]
 
 
 class Forall(BinaryOp):
