@@ -4,6 +4,9 @@ from rply.token import BaseBox
 class Var(BaseBox):
     def __init__(self, value):
         self.value = value
+        
+    def __eq__(self, other):
+        return self.__class__ == other.__class__ and self.value == other.value
 
     def eval(self):
         return self.value
@@ -16,6 +19,9 @@ class BinaryOp(BaseBox):
     def __init__(self, left, right):
         self.left = left
         self.right = right
+
+    def __eq__(self, other):
+        return self.__class__ == other.__class__ and self.left == other.left and self.right == other.right 
 
     def show(self):
         return f'{self.__class__.__name__}({self.left.show()},{self.right.show()})'

@@ -53,7 +53,9 @@ def contraversial(a, b):
     return False
 
 
-str = 'a -> a'
+str = 'a -> b ^ c'
 a = parser.parse(lexer.lex(str))
 if resolve([], [a]):
     print('General.')
+else:
+    print('Not general.')
