@@ -3,7 +3,6 @@ from parsec import parser
 import ast
 
 
-
 # all(a, resovle(...) and all(b, resolve(...)) -> true, else -> false)
 def resolve(a, b):
 
@@ -42,11 +41,13 @@ def resolve(a, b):
     
     return True
 
+
 def contraversial(a, b):
     for i in a:
         if i in b:
             return True
     return False
+
 
 str = 'a -> a'
 a = parser.parse(lexer.lex(str))

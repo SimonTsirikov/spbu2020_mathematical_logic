@@ -20,13 +20,14 @@ class BinaryOp(BaseBox):
     def show(self):
         return f'{self.__class__.__name__}({self.left},{self.right})'
 
-# change str + str tp f''
+
 class UnaryOp:
     def __init__(self, argument):
         self.argument = argument
 
     def show(self):
         return f'{self.__class__.__name__}({self.argument})'
+
 
 class Negation(UnaryOp):
     def eval(self):
