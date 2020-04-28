@@ -4,7 +4,7 @@ from ast import *
 pg = ParserGenerator(
     # A list of all token names, accepted by the parser.
     ['VAR', 'OPEN_PAREN', 'CLOSE_PAREN',
-     'SEMI_COLON', 'CONJ', 'DISJ', 'NEG', 'EXIST', 'ALL', 'SUBSTITUTION', 'IMP'
+     'CONJ', 'DISJ', 'NEG', 'EXIST', 'ALL', 'IMP'
      ],
     # A list of precedence rules with ascending precedence, to
     # disambiguate ambiguous production rules.
@@ -12,7 +12,7 @@ pg = ParserGenerator(
         ('right', ['IMP']),
         ('left', ['DISJ']),
         ('left', ['CONJ']),
-        ('left', ['NEG', 'EXIST', 'ALL', 'SUBSTITUTION'])
+        ('left', ['NEG', 'EXIST', 'ALL'])
     ]
 )
 
