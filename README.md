@@ -24,7 +24,7 @@ Grammar        | Meaning
 [a-z]+         | variable name
 ~ expr         | not
 expr1 /\ expr2 | and
-expr1 \/ expr2 | or
+expr1 \\/ expr2 | or
 expr1 -> expr2 | implication
 ! var expr     | exists
 \+ var expr     | forall
