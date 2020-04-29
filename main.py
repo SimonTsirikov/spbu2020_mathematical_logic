@@ -4,8 +4,8 @@ import sys
 for i in range(1, len(sys.argv)):
     try:
         if solve(sys.argv[i]):
-            print('General.')
+            print(f'Valid: {sys.argv[i]}')
         else:
-            print('Not general.')
+            print(f'Not valid: {sys.argv[i]}')
     except:
-        print(f'Invalid input: "{str(sys.argv[i])}".')
+        print(f'Invalid input: \'{str(sys.argv[i])}\'')

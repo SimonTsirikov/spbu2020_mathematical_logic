@@ -6,10 +6,8 @@ import ast
 def solve(string):
     expr = parser.parse(lexer.lex(string))
     if resolve([], [expr], False):
-        print('General')
         return True
     else:
-        print('Not general')
         return False
 
 
