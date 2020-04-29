@@ -1,6 +1,5 @@
 from solver import solve
 
-
 assert solve('!a a')
 assert solve('~(+a a)')
 assert not solve('!a (a/\~a)')

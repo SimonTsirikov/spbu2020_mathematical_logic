@@ -91,7 +91,7 @@ class Forall(BinaryOp):
 
     def __eq__(self, other):
         if self.__class__ == other.__class__:
-            if (self.left != other.left):
+            if self.left != other.left:
                 self.right = substitute(self.left, other.left, self.right)
                 self.left = other.left
             return self.right == other.right
@@ -121,7 +121,7 @@ class Exists(BinaryOp):
 
     def __eq__(self, other):
         if self.__class__ == other.__class__:
-            if (self.left != other.left):
+            if self.left != other.left:
                 self.right = substitute(self.left, other.left, self.right)
                 self.left = other.left
             return self.right == other.right
