@@ -7,5 +7,5 @@ for i in range(1, len(sys.argv)):
             print(f'Valid: {sys.argv[i]}')
         else:
             print(f'Not valid: {sys.argv[i]}')
-    except:
+    except SyntaxError:
         print(f'Invalid input: \'{str(sys.argv[i])}\'')
