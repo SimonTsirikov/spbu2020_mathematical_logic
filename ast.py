@@ -44,28 +44,15 @@ class BinaryOp(BaseBox):
         return f'{self.__class__.__name__}({self.left.show()},{self.right.show()})'
 
 
-class Negation(UnaryOp):
+class Neg(UnaryOp):
     def introduce(self):
-        # if isinstance(self.argument, Exists):
-        #     expr = Forall(self.argument.left, Negation(self.argument.right))
-        # elif isinstance(self.argument, Forall):
-        #     expr = Exists(self.argument.left, Negation(self.argument.right))
-        # else:
-        #     expr = self.argument
-
-        # return [(self, [], [expr])]
         return [(self, [], [self.argument])]
 
     def eliminate(self):
         if isinstance(self.argument, Forall):
-            expr = Exists(self.argument.left, Negation(self.argument.right))
+            expr = Exists(self.argument.left, Neg(self.argument.right))
             return [(self, [], [expr])]
         else:
-            # elif isinstance(self.argument, Exists):
-            #     expr = Forall(self.argument.left, Negation(self.argument.right))
-            # else:
-            #     expr = self.argument
-
             return [(self, [self.argument], [])]
 
 
@@ -164,13 +151,13 @@ class Substitute(BinaryOp):
     def show(self):
         return f'{self.__class__.__name__}({self.left.show()} in {self.right.show()})'
 
-    def collise(self):
+    def collision(self):
         global index
         index += 1
         if self.left.value.startswith('_v'):
             new_name = f'_v{index}'
         else:
-            new_name = f'_t{index}'
+            new_name = f'_c{index}'
         self.right = substitute(self.left, Var(new_name), self.right)
         self.left = Var(new_name)
 
@@ -190,7 +177,7 @@ def substitute(old, new, expr):
             if expr.left.value.startswith('_v'):
                 res.left = Var(f'_v{index}')
             else:
-                res.left = Var(f'_t{index}')
+                res.left = Var(f'_c{index}')
             res.right = substitute(expr.left, res.left, res.right)
             res.right = substitute(old, new, res.right)
     elif issubclass(type(expr), BinaryOp):

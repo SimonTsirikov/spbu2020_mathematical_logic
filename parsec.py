@@ -34,7 +34,7 @@ def expression_un_op(p):
     op = p[0]
     value = p[1]
     if op.gettokentype() == 'NEG':
-        return Negation(value)
+        return Neg(value)
     else:
         raise AssertionError('Oops, this should not be possible!')
 
