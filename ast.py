@@ -45,7 +45,8 @@ class Atom(Term):
     
     def __eq__(self, other):
         eq_type = self.__class__ == other.__class__ and self.name == other.name 
-        eq_args = (len(self.args) == len(other.args) and all([i == j for i, j in zip(self.args, other.args)])) 
+        if eq_type:
+            eq_args = (len(self.args) == len(other.args) and all([i == j for i, j in zip(self.args, other.args)])) 
         return  eq_type and eq_args
 
 
