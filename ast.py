@@ -2,17 +2,51 @@ from rply.token import BaseBox
 
 
 class Var(BaseBox):
-    def __init__(self, value):
-        self.value = value
+    def __init__(self, name):
+        self.name = name
 
     def __eq__(self, other):
-        return self.__class__ == other.__class__ and self.value == other.value
+        return self.__class__ == other.__class__ and self.name == other.name
 
     def copy(self):
-        return self.__class__(self.value)
+        return self.__class__(self.name)
 
     def show(self):
-        return f'{self.__class__.__name__} {self.value}'
+        return f'{self.__class__.__name__} {self.name}'
+
+
+class Term(BaseBox):
+    def __init__(self, name, args=None):
+        self.name = name
+        self.args = args
+    
+    def __eq__(self, other):
+        eq_type = self.__class__ == other.__class__ and self.name == other.name 
+        if eq_type:
+            eq_args = self.args is None and other.args is None 
+            if not eq_args and not (self.args is None or other.args is None):
+                eq_args = (len(self.args) == len(other.args) and all([i == j for i, j in zip(self.args, other.args)])) 
+        return  eq_type and eq_args
+
+    def copy(self):
+        return self.__class__(self.name, self.args)
+
+    def show(self):
+        if self.args is None:
+            return f'{self.__class__.__name__} {self.name}'
+        else:
+            return f'{self.__class__.__name__} {self.name}({", ".join(map(lambda x: x.show(), self.args))})'
+
+
+class Atom(Term):
+    def __init__(self, name, args):
+        self.name = name
+        self.args = args
+    
+    def __eq__(self, other):
+        eq_type = self.__class__ == other.__class__ and self.name == other.name 
+        eq_args = (len(self.args) == len(other.args) and all([i == j for i, j in zip(self.args, other.args)])) 
+        return  eq_type and eq_args
 
 
 class UnaryOp:
@@ -154,7 +188,7 @@ class Substitute(BinaryOp):
     def collision(self):
         global index
         index += 1
-        if self.left.value.startswith('_v'):
+        if self.left.name.startswith('_v'):
             new_name = f'_v{index}'
         else:
             new_name = f'_c{index}'
@@ -174,7 +208,7 @@ def substitute(old, new, expr):
         else:
             global index
             index += 1
-            if expr.left.value.startswith('_v'):
+            if expr.left.name.startswith('_v'):
                 res.left = Var(f'_v{index}')
             else:
                 res.left = Var(f'_c{index}')
