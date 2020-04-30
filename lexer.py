@@ -21,6 +21,6 @@ lg.add('CLOSE_PAREN', r'\)')
 # Semi Colon
 lg.add('SEMI_COLON', r'\;')
 
-lg.ignore('\s+')
+lg.ignore(r'\s+')
 
 lexer = lg.build()

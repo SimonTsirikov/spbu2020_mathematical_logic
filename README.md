@@ -22,9 +22,10 @@ To run program with your input, run `python main.py 'str1' 'str2' ... 'strN'`, w
 Grammar        | Meaning
 -------------- | -------------
 [a-z]+         | variable name
+( expr )       | braces
 ~ expr         | not
 expr1 /\ expr2 | and
-expr1 \/ expr2 | or
+expr1 \\/ expr2 | or
 expr1 -> expr2 | implication
 ! var expr     | exists
-+ var expr     | forall
+\+ var expr     | forall
