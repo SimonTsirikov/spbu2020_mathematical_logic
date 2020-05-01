@@ -58,7 +58,7 @@ class UnaryOp:
         if not isinstance(argument, Term):
             self.argument = argument
         else:
-            raise ValueError(f'In {self.__class__.__name__}, {argument.show()} should be Expr.')
+            raise ValueError(f'In {self.__class__.__name__}, {argument.show()} should be Expr, not {argument.__class__.__name__}.')
     def __eq__(self, other):
         return self.__class__ == other.__class__ and self.argument == other.argument
 
@@ -75,7 +75,10 @@ class BinaryOp(BaseBox):
             self.left = left
             self.right = right
         else:
-            raise ValueError(f'In {self.__class__.__name__}, both {left.show()} and {right.show()} should be Expr.')
+            if isinstance(left, Term):
+                raise ValueError(f'In {self.__class__.__name__}, {left.show()} should be Expr, not {left.__class__.__name__}.')
+            if isinstance(right, Term):
+                raise ValueError(f'In {self.__class__.__name__}, {right.show()} should be Expr, not {left.__class__.__name__}.')
 
     def __eq__(self, other):
         return self.__class__ == other.__class__ and self.left == other.left and self.right == other.right
@@ -129,8 +132,11 @@ class Forall(BinaryOp):
             self.right = right
             self.depth = 0
         else:
-            raise ValueError(f'In {self.__class__.__name__}, {left.show()} should be Var and {right.show()} should be Expr.')
-
+            if not(isinstance(left, Term) and (left.args is None)):
+                raise ValueError(f'In {self.__class__.__name__}, {left.show()} should be Var, not {left.__class__.__name__}.')
+            if isinstance(right, Term):
+                raise ValueError(f'In {self.__class__.__name__}, {right.show()} should be Expr, not {right.__class__.__name__}.')
+            
     def __eq__(self, other):
         if self.__class__ == other.__class__:
             if self.left != other.left:
