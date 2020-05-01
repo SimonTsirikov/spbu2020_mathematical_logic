@@ -19,7 +19,10 @@ class Term(BaseBox):
         return False
 
     def copy(self):
-        return self.__class__(self.name, self.args)
+        if self.args is None:
+            return self.__class__(self.name)
+        else:
+            return self.__class__(self.name, self.args.copy())
 
     def show(self):
         if self.args is None:
@@ -28,7 +31,7 @@ class Term(BaseBox):
             return f'{self.__class__.__name__} {self.name}({", ".join(map(lambda x: x.show(), self.args))})'
 
 
-class Atom(Term):
+class Atom(BaseBox):
     def __init__(self, name, args):
         self.name = name
         self.args = args
@@ -41,6 +44,14 @@ class Atom(Term):
             return (len(self.args) == len(other.args) and all([i == j for i, j in zip(self.args, other.args)]))     
         return False
 
+    def copy(self):
+        return self.__class__(self.name, self.args.copy())
+
+    def show(self):
+        if self.args is None:
+            return f'{self.__class__.__name__} {self.name}'
+        else:
+            return f'{self.__class__.__name__} {self.name}({", ".join(map(lambda x: x.show(), self.args))})'
 
 class UnaryOp:
     def __init__(self, argument):
@@ -81,11 +92,11 @@ class Negation(UnaryOp):
         return [(self, [], [self.argument])]
 
     def eliminate(self):
-        if isinstance(self.argument, Forall):
-            expr = Exists(self.argument.left, Negation(self.argument.right))
-            return [(self, [], [expr])]
-        else:
-            return [(self, [self.argument], [])]
+        # if isinstance(self.argument, Forall):
+        #     expr = Exists(self.argument.left, Negation(self.argument.right))
+        #     return [(self, [], [expr])]
+        # else:
+        return [(self, [self.argument], [])]
 
 
 class Implication(BinaryOp):
@@ -204,9 +215,12 @@ def substitute(old, new, expr):
     res = expr.copy()
     if expr == old:
         res = new
+    elif isinstance(expr, Atom):
+        for i in range(0, len(expr.args)):
+            res.args[i] = substitute(old, new, expr.args[i])
     elif issubclass(type(expr), UnaryOp):
         res.argument = substitute(old, new, res.argument)
-    elif isinstance(expr, Forall) or isinstance(expr, Exists):
+    elif isinstance(expr, Forall) or isinstance(expr, Exists) or isinstance(expr, Substitute):
         if expr.left != old:
             res.right = substitute(old, new, res.right)
         else:

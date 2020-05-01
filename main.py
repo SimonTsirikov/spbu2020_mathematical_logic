@@ -9,3 +9,5 @@ for i in range(1, len(sys.argv)):
             print(f'Not valid: {sys.argv[i]}')
     except SyntaxError:
         print(f'Invalid input: \'{str(sys.argv[i])}\'')
+    except ValueError as error:
+        print(error)
