@@ -92,10 +92,6 @@ class Negation(UnaryOp):
         return [(self, [], [self.argument])]
 
     def eliminate(self):
-        # if isinstance(self.argument, Forall):
-        #     expr = Exists(self.argument.left, Negation(self.argument.right))
-        #     return [(self, [], [expr])]
-        # else:
         return [(self, [self.argument], [])]
 
 

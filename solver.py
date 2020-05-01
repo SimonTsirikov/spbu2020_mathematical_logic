@@ -99,7 +99,7 @@ def prepare_and_resolve(antecedent, succedent, reversed, exists_mode, item):
 def enumerate_available_substitutions(mask, array):
     for i in array:
         for var_new in traverse_expression_tree(i):
-            if var_new is not None:# and not contains(var_new, mask.right):
+            if var_new is not None:
                 result = ast.substitute(mask.left, var_new, mask.right)
                 yield result
     end_phase = mask.copy()
@@ -130,54 +130,9 @@ def traverse_expression_tree(source):
             yield item
     yield None
 
-    # if not aware_recursion(source):
-    #     if not check_recursion(source):
-    #         if not isinstance(source, ast.Negation):
-    #             yield ast.Negation(source)
-    #         yield source
-
-    #     if issubclass(type(source), ast.UnaryOp):
-    #         for i in traverse_expression_tree(source.argument):
-    #             if i is not None:
-    #                 yield i
-    #     elif issubclass(type(source), ast.BinaryOp):
-    #         for i in traverse_expression_tree(source.left):
-    #             if i is not None:
-    #                 yield i
-    #         for i in traverse_expression_tree(source.right):
-    #             if i is not None:
-    #                 yield i
-    # yield None
-
 
 def aware_recursion(expr):
     return isinstance(expr, ast.Forall) or isinstance(expr, ast.Exists) or isinstance(expr, ast.Substitute)
-
-
-# def check_recursion(expr):
-#     if issubclass(type(expr), ast.UnaryOp):
-#         return check_recursion(expr.argument)
-#     elif issubclass(type(expr), ast.BinaryOp):
-#         return aware_recursion(expr) and check_recursion(expr.left) and check_recursion(expr.right)
-#     else:
-#         return False
-
-
-# def contains(box, item):
-#     if isinstance(box, ast.Term) and box.args is None:
-#         return box == item
-#     elif issubclass(type(box), ast.UnaryOp):
-#         return contains(box.argument, item)
-#     elif isinstance(box, ast.Substitute):
-#         if box.left != item:
-#             return contains(box.right, item)
-#         else:
-#             box.collision()
-#             return contains(box.right, item)
-#     elif isinstance(box, ast.Forall) or isinstance(box, ast.Exists):
-#         return True
-#     elif issubclass(type(box), ast.BinaryOp):
-#         return contains(box.left, item) or contains(box.right, item)
 
 
 def has_next(x):
