@@ -20,19 +20,19 @@ To run program with your input, run `python main.py 'str1' 'str2' ... 'strN'`, w
 
 
 ```
-AND ::= '/\'
-OR ::= '\/'
-NOT ::= '~'
-IMPLICATION ::= '->'
-FORALL ::= '+'
-EXISTS ::= '!'
+Negation    ::= '~' Expr
+Conjunction ::= Expr '/\' Expr
+Disjunction ::= Expr '\/' Expr
+Implication ::= Expr '->' Expr
+Forall ::= '+' Var Expr
+Exists ::= '!' Var Expr
 
 Functional_symbol ::= 'F'[0-9]*
 Predicate_symbol ::= 'P'[0-9]*  
 
 Var ::= [a-z]+
 Term ::= Var | Functional_symbol '(' ((Term ',')* Term)? ')' 
-Expr ::= Predicate_symbol '(' ((Term ',')* Term)? ')' | '(' Expr ')' 
-        | NOT Expr | Expr AND Expr | Expr OR Expr | Expr IMPLICATION Expr 
-        | EXISTS Var Expr | FORALL Var Expr
+Atom ::= Predicate_symbol '(' ((Term ',')* Term)? ')'
+Expr ::= Atom | '(' Expr ')' | Negation | Conjunction 
+        | Disjunction | Implication | Exists | Forall
 ```

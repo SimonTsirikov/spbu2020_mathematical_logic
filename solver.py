@@ -113,8 +113,8 @@ def enumerate_available_substitutions(mask, array):
 def traverse_expression_tree(source):
     if not aware_recursion(source):
         if not check_recursion(source):
-            if not isinstance(source, ast.Neg):
-                yield ast.Neg(source)
+            if not isinstance(source, ast.Negation):
+                yield ast.Negation(source)
             yield source
 
         if issubclass(type(source), ast.UnaryOp):
@@ -166,7 +166,7 @@ def has_next(x):
 
 
 def transist(x):
-    return x.argument if isinstance(x, ast.Neg) else ast.Neg(x)
+    return x.argument if isinstance(x, ast.Negation) else ast.Negation(x)
 
 
 def contraversial(antecedent, succedent, exists_mode):

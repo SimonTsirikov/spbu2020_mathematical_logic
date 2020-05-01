@@ -34,7 +34,7 @@ def expression_un_op(p):
     op = p[0]
     value = p[1]
     if op.gettokentype() == 'NEG':
-        return Neg(value)
+        return Negation(value)
     else:
         raise AssertionError('Oops, this should not be possible!')
 
@@ -57,11 +57,11 @@ def expression_bin_op(p):
     left = p[0]
     right = p[2]
     if p[1].gettokentype() == 'IMP':
-        return Imp(left, right)
+        return Implication(left, right)
     elif p[1].gettokentype() == 'DISJ':
-        return Disj(left, right)
+        return Disjunction(left, right)
     elif p[1].gettokentype() == 'CONJ':
-        return Conj(left, right)
+        return Conjunction(left, right)
     elif p[1].gettokentype() == 'ALL':
         return Forall(left, right)
     else:
