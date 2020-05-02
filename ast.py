@@ -8,13 +8,14 @@ class Term(BaseBox):
         if args is not None:
             for item in args:
                 if not isinstance(item, Term):
-                    raise ValueError(f'Inappropriate argument for "{self.name}": {item.show()} should be Term, not {item.__class__.__name__}.')
-    
-    def __eq__(self, other): 
+                    raise ValueError(
+                        f'Inappropriate argument for "{self.name}": {item.show()} should be Term, not {item.__class__.__name__}.')
+
+    def __eq__(self, other):
         if self.__class__ == other.__class__ and self.name == other.name:
-            eq_args = self.args is None and other.args is None 
+            eq_args = self.args is None and other.args is None
             if not (self.args is None or other.args is None):
-                eq_args = (len(self.args) == len(other.args) and all([i == j for i, j in zip(self.args, other.args)]))     
+                eq_args = (len(self.args) == len(other.args) and all([i == j for i, j in zip(self.args, other.args)]))
             return eq_args
         return False
 
@@ -37,11 +38,12 @@ class Atom(BaseBox):
         self.args = args
         for item in args:
             if not isinstance(item, Term):
-                raise ValueError(f'Inappropriate argument for "{self.name}": {item.show()} should be Term, not {item.__class__.__name__}.')
-    
+                raise ValueError(
+                    f'Inappropriate argument for "{self.name}": {item.show()} should be Term, not {item.__class__.__name__}.')
+
     def __eq__(self, other):
         if self.__class__ == other.__class__ and self.name == other.name:
-            return (len(self.args) == len(other.args) and all([i == j for i, j in zip(self.args, other.args)]))     
+            return len(self.args) == len(other.args) and all([i == j for i, j in zip(self.args, other.args)])
         return False
 
     def copy(self):
@@ -53,12 +55,15 @@ class Atom(BaseBox):
         else:
             return f'{self.__class__.__name__} {self.name}({", ".join(map(lambda x: x.show(), self.args))})'
 
+
 class UnaryOp:
     def __init__(self, argument):
         if not isinstance(argument, Term):
             self.argument = argument
         else:
-            raise ValueError(f'In {self.__class__.__name__}, {argument.show()} should be Expr, not {argument.__class__.__name__}.')
+            raise ValueError(
+                f'In {self.__class__.__name__}, {argument.show()} should be Expr, not {argument.__class__.__name__}.')
+
     def __eq__(self, other):
         return self.__class__ == other.__class__ and self.argument == other.argument
 
@@ -76,9 +81,11 @@ class BinaryOp(BaseBox):
             self.right = right
         else:
             if isinstance(left, Term):
-                raise ValueError(f'In {self.__class__.__name__}, {left.show()} should be Expr, not {left.__class__.__name__}.')
+                raise ValueError(
+                    f'In {self.__class__.__name__}, {left.show()} should be Expr, not {left.__class__.__name__}.')
             if isinstance(right, Term):
-                raise ValueError(f'In {self.__class__.__name__}, {right.show()} should be Expr, not {left.__class__.__name__}.')
+                raise ValueError(
+                    f'In {self.__class__.__name__}, {right.show()} should be Expr, not {left.__class__.__name__}.')
 
     def __eq__(self, other):
         return self.__class__ == other.__class__ and self.left == other.left and self.right == other.right
@@ -128,15 +135,16 @@ index = 0
 class Forall(BinaryOp):
     def __init__(self, left, right):
         if isinstance(left, Term) and (left.args is None) and not isinstance(right, Term):
-            self.left = left
-            self.right = right
+            super().__init__(left, right)
             self.depth = 0
         else:
-            if not(isinstance(left, Term) and (left.args is None)):
-                raise ValueError(f'In {self.__class__.__name__}, {left.show()} should be Var, not {left.__class__.__name__}.')
+            if not (isinstance(left, Term) and (left.args is None)):
+                raise ValueError(
+                    f'In {self.__class__.__name__}, {left.show()} should be Var, not {left.__class__.__name__}.')
             if isinstance(right, Term):
-                raise ValueError(f'In {self.__class__.__name__}, {right.show()} should be Expr, not {right.__class__.__name__}.')
-            
+                raise ValueError(
+                    f'In {self.__class__.__name__}, {right.show()} should be Expr, not {right.__class__.__name__}.')
+
     def __eq__(self, other):
         if self.__class__ == other.__class__:
             if self.left != other.left:
@@ -151,7 +159,9 @@ class Forall(BinaryOp):
         index += 1
         if self.depth < 1:
             self.depth += 1
-            return [(self, [Substitute(Term(f'_v{index}'), substitute(self.left, Term(f'_v{index}'), self.right)), self], [])]
+            return [(
+                self, [Substitute(Term(f'_v{index}'), substitute(self.left, Term(f'_v{index}'), self.right)), self],
+                [])]
         else:
             return [(self, [Substitute(Term(f'_v{index}'), substitute(self.left, Term(f'_v{index}'), self.right))], [])]
 
@@ -164,11 +174,11 @@ class Forall(BinaryOp):
 class Exists(BinaryOp):
     def __init__(self, left, right):
         if isinstance(left, Term) and (left.args is None) and not isinstance(right, Term):
-            self.left = left
-            self.right = right
+            super().__init__(left, right)
             self.depth = 0
         else:
-            raise ValueError(f'In {self.__class__.__name__}, {left.show()} should be Var and {right.show()} should be Expr.')
+            raise ValueError(
+                f'In {self.__class__.__name__}, {left.show()} should be Var and {right.show()} should be Expr.')
 
     def __eq__(self, other):
         if self.__class__ == other.__class__:
@@ -189,15 +199,15 @@ class Exists(BinaryOp):
         index += 1
         if self.depth < 1:
             self.depth += 1
-            return [(self, [], [Substitute(Term(f'_v{index}'), substitute(self.left, Term(f'_v{index}'), self.right)), self])]
+            return [(self, [],
+                     [Substitute(Term(f'_v{index}'), substitute(self.left, Term(f'_v{index}'), self.right)), self])]
         else:
             return [(self, [], [Substitute(Term(f'_v{index}'), substitute(self.left, Term(f'_v{index}'), self.right))])]
 
 
 class Substitute(BinaryOp):
     def __init__(self, left, right):
-        self.left = left
-        self.right = right
+        super().__init__(left, right)
 
     def show(self):
         return f'{self.__class__.__name__}({self.left.show()} in {self.right.show()})'
