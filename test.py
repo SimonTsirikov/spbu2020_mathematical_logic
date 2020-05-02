@@ -33,11 +33,11 @@ assert parser.parse(r'~P(a)\/P1(b)') == Disjunction(Negation(Atom('P', [Term('a'
 assert parser.parse(r'P(a)/\~P1(b)') == Conjunction(Atom('P', [Term('a')]), Negation(Atom('P1', [Term('b')])))
 assert parser.parse(r'~(P(a)\/P1(b))') == Negation(Disjunction(Atom('P', [Term('a')]), Atom('P1', [Term('b')])))
 
-assert parser.parse(r'!a P(a)') == Exists(Term('a'), Negation(Atom('P', [Term('a')])))
-assert parser.parse(r'+a P(a)') == Forall(Term('a'), Negation(Atom('P', [Term('a')])))
+assert parser.parse(r'!a P(a)') == Exists(Term('a'), Atom('P', [Term('a')]))
+assert parser.parse(r'+a P(a)') == Forall(Term('a'), Atom('P', [Term('a')]))
 
-assert parser.parse(r'~!a P(a)') == Negation(Exists(Term('a'), Negation(Atom('P', [Term('a')]))))
-assert parser.parse(r'~+a P(a)') == Negation(Forall(Term('a'), Negation(Atom('P', [Term('a')]))))
+assert parser.parse(r'~!a P(a)') == Negation(Exists(Term('a'), Atom('P', [Term('a')])))
+assert parser.parse(r'~+a P(a)') == Negation(Forall(Term('a'), Atom('P', [Term('a')])))
 
 assert parser.parse(r'!a P(a) \/ P1(b)') == Disjunction(Exists(Term('a'), Atom('P', [Term('a')])), Atom('P1', [Term('b')]))
 assert parser.parse(r'!a (P(a) \/ P1(b))') == Exists(Term('a'), Disjunction(Atom('P', [Term('a')])), Atom('P1', [Term('b')]))
