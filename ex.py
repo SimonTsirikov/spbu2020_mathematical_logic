@@ -11,29 +11,36 @@ for_all = '+'
 imp = '->'
 
 
-def parser(p):
+def parse(p):
     if isinstance(p, str):
         if 'F' == p[0] or 'P' == p[0]:
             return p
         else:
             return ast.Term(p)
+    elif issubclass(type(p), ast.BaseBox):
+        return p
 
     elif len(p) >= 3:
         if p[1] == disj:
-            return ast.Disj(parser(p[0: len(p) - 1]), parser([p[-1]]))
-        else:
-            for i in p[1]:
-                parser(i)
+            return parse([ast.Disjunction(parse(p[0]), parse(p[2]))] + p[3:])
+        elif p[1] == conj:
+            return parse([ast.Conjunction(parse(p[0]), parse(p[2]))] + p[3:])
+        elif p[-2] == imp:
+            return parse(p[:-4] + [ast.Implication(parse(p[-3]), parse(p[-1]))])
+        elif p[0] == exist:
+            return parse([ast.Exists(parse(p[1]), parse(p[2]))] + p[3:])
+        elif p[0] == for_all:
+            return parse([ast.Forall(parse(p[1]), parse(p[2]))] + p[3:])
 
     elif len(p) == 2:
         if 'F' in p[0]:
-            return ast.Term(parser(p[0]), [parser(i) for i in p[1]])
+            return ast.Term(parse(p[0]), [parse(i) for i in p[1]])
         elif 'P' in p[0]:
-            return ast.Atom(p[0], p[1])
-        # elif p[0] == '!':
-        #     return ast.Exists(parser(p[1]))
+            return ast.Atom(p[0], [parse(i) for i in p[1]])
+        elif p[0] == neg:
+            return ast.Negation(parse(p[1]))
     else:
-        return parser(p[0])
+        return parse(p[0])
 
 
 # Parenthesis, dont show in result (function of suppress)
@@ -70,10 +77,11 @@ operation = infixNotation(
 )
 
 expr = Forward()
-expr <<= term | operation
+expr <<= term | operation | Group(for_all + Word(alphanums + '_') + expr) | Group(exist + Word(alphanums + '_') + expr)
 
-l = expr.parseString(r'')
+expression = expr.parseString(r'+a ~P0(a)->(P(f)\/~P1(b))/\P2(c)->P3(d)')
 
-print(l)
-# result = parser(l)
-# print()
+print(expression)
+
+# result = parse(expression)
+# print(result.show())
