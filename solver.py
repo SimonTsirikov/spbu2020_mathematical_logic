@@ -1,4 +1,4 @@
-from ex import pparse
+from parsec import pparse
 import ast
 
 
@@ -8,7 +8,7 @@ def solve(string):
 
 
 def resolve(antecedent, succedent, exists_mode):    
-    if contraversial(antecedent, succedent, exists_mode):
+    if contraversial(antecedent, succedent):
         return True
 
     are_valid_branches_left, exists_mode_1 = check_side(antecedent, succedent, False, exists_mode)
@@ -144,5 +144,5 @@ def transist(x):
     return x.argument if isinstance(x, ast.Negation) else ast.Negation(x)
 
 
-def contraversial(antecedent, succedent, exists_mode):
+def contraversial(antecedent, succedent):
     return any(map(lambda x: x in antecedent, succedent))

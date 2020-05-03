@@ -100,6 +100,7 @@ class BinaryOp(BaseBox):
             result = f'{self.__class__.__name__}({self.left},{self.right})'
         return result
 
+
 class Negation(UnaryOp):
     def introduce(self):
         return [(self, [], [self.argument])]

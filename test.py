@@ -1,5 +1,5 @@
 from solver import solve
-from ex import pparse
+from parsec import pparse
 from ast import *
 
 
