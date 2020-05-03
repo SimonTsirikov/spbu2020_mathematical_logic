@@ -83,8 +83,8 @@ operation = infixNotation(
     legal_expr,
     [
         (NEG, 1, opAssoc.RIGHT),
-        (ALL, 2, opAssoc.LEFT),
-        (EXS, 2, opAssoc.LEFT),
+        (ALL, 2, opAssoc.RIGHT),
+        (EXS, 2, opAssoc.RIGHT),
         (IMP, 2, opAssoc.RIGHT),
         (CONJ, 2, opAssoc.LEFT),
         (DISJ, 2, opAssoc.LEFT)
