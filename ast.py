@@ -28,9 +28,9 @@ class Term(BaseBox):
 
     def show(self):
         if self.args is None:
-            return f'{self.__class__.__name__} {self.name}'
+            return f'{self.name}'
         else:
-            return f'{self.__class__.__name__} {self.name}({", ".join(map(lambda x: x.show(), self.args))})'
+            return f'{self.name}({", ".join(map(lambda x: x.show(), self.args))})'
 
 
 class Atom(BaseBox):
@@ -53,9 +53,9 @@ class Atom(BaseBox):
 
     def show(self):
         if self.args is None:
-            return f'{self.__class__.__name__} {self.name}'
+            return f'{self.name}'
         else:
-            return f'{self.__class__.__name__} {self.name}({", ".join(map(lambda x: x.show(), self.args))})'
+            return f'{self.name}({", ".join(map(lambda x: x.show(), self.args))})'
 
 
 class UnaryOp:
@@ -73,7 +73,12 @@ class UnaryOp:
         return self.__class__(self.argument.copy())
 
     def show(self):
-        return f'{self.__class__.__name__}({self.argument.show()})'
+        name = self.__class__.__name__
+        if name == 'Negation':
+            output = '~'
+        else:
+            output = name
+        return f'{output}{self.argument.show()}'
 
 
 class BinaryOp(BaseBox):
@@ -96,11 +101,20 @@ class BinaryOp(BaseBox):
         return self.__class__(self.left.copy(), self.right.copy())
 
     def show(self):
-        try:
-            result = f'{self.__class__.__name__}({self.left.show()},{self.right.show()})'
-        except AttributeError:
-            result = f'{self.__class__.__name__}({self.left},{self.right})'
-        return result
+        name = self.__class__.__name__
+        if name == 'Disjunction':
+            output = r' \/ '
+        elif name == 'Conjunction':
+            output = r' /\ '
+        elif name == 'Implication':
+            output = r' -> '
+        elif name == 'Forall':
+            output = r' + '
+        elif name == 'Exists':
+            output = r' ! '
+        else:
+            output = name
+        return f'({self.left.show()}{output}{self.right.show()})'
 
 
 class Negation(UnaryOp):
@@ -208,7 +222,7 @@ class Substitution(BinaryOp):
         self.right = right
 
     def show(self):
-        return f'{self.__class__.__name__}({self.left.show()} in {self.right.show()})'
+        return f'({self.left.show()} in {self.right.show()})'
 
     def collision(self):
         global index

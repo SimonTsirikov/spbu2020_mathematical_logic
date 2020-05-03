@@ -4,6 +4,8 @@ import ast
 
 def solve(string):
     expr = pparse(string)
+    print()
+    print(f'Sequent for {expr.show()}:')
     return solve__internal([], [expr], False)
 
 
@@ -102,10 +104,12 @@ def enumerate_available_substitutions(mask, array):
     for i in array:
         for var_new in traverse_expression_tree(i):
             if var_new is not None:
+                print(f'Substitute {var_new.show()} instead of {mask.left.show()} in {mask.right.show()}:')
                 result = ast.substitute(mask.left, var_new, mask.right)
                 yield result
     end_phase = mask.copy()
     end_phase.collision()
+    print(f'Substitute {end_phase.left.show()} instead of {mask.left.show()} in {mask.right.show()}:')
     yield end_phase.right
 
 
