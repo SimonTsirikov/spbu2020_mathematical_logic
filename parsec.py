@@ -21,7 +21,7 @@ pg = ParserGenerator(
 def expression_variable(p):
     # p is a list of the pieces matched by the right hand side of the
     # rule
-    return Var(p[0].getstr())
+    return Term(p[0].getstr())
 
 
 @pg.production('expression : OPEN_PAREN expression CLOSE_PAREN')

@@ -94,8 +94,11 @@ class BinaryOp(BaseBox):
         return self.__class__(self.left.copy(), self.right.copy())
 
     def show(self):
-        return f'{self.__class__.__name__}({self.left.show()},{self.right.show()})'
-
+        try:
+            result = f'{self.__class__.__name__}({self.left.show()},{self.right.show()})'
+        except AttributeError:
+            result = f'{self.__class__.__name__}({self.left},{self.right})'
+        return result
 
 class Negation(UnaryOp):
     def introduce(self):
@@ -135,7 +138,8 @@ index = 0
 class Forall(BinaryOp):
     def __init__(self, left, right):
         if isinstance(left, Term) and (left.args is None) and not isinstance(right, Term):
-            super().__init__(left, right)
+            self.left = left
+            self.right = right
             self.depth = 0
         else:
             if not (isinstance(left, Term) and (left.args is None)):
@@ -174,7 +178,8 @@ class Forall(BinaryOp):
 class Exists(BinaryOp):
     def __init__(self, left, right):
         if isinstance(left, Term) and (left.args is None) and not isinstance(right, Term):
-            super().__init__(left, right)
+            self.left = left
+            self.right = right
             self.depth = 0
         else:
             raise ValueError(
@@ -207,7 +212,8 @@ class Exists(BinaryOp):
 
 class Substitute(BinaryOp):
     def __init__(self, left, right):
-        super().__init__(left, right)
+        self.left = left
+        self.right = right
 
     def show(self):
         return f'{self.__class__.__name__}({self.left.show()} in {self.right.show()})'

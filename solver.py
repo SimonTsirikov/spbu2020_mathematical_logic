@@ -1,10 +1,9 @@
-from lexer import lexer
-from parsec import parser
+from ex import pparse
 import ast
 
 
 def solve(string):
-    expr = parser.parse(lexer.lex(string))
+    expr = pparse(string)
     return resolve([], [expr], False)
 
 
@@ -122,7 +121,9 @@ def traverse_expression_tree(source):
         for item in traverse_expression_tree(source.argument):
             yield item
     elif aware_recursion(source):
-        yield None
+        for item in traverse_expression_tree(source.right):
+            if isinstance(item, ast.Term) and not item.name == source.left.name:
+                yield item
     elif issubclass(type(source), ast.BinaryOp):
         for item in traverse_expression_tree(source.left):
             yield item
