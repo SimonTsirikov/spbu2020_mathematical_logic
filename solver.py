@@ -4,10 +4,16 @@ import ast
 
 def solve(string):
     expr = pparse(string)
-    return resolve([], [expr], False)
+    return solve__internal([], [expr], False)
 
 
-def resolve(antecedent, succedent, exists_mode):    
+def pprint(a, b):
+    print(f"{', '.join(map(lambda x: x.show(), a))} |- {', '.join(map(lambda x: x.show(), b))}")
+
+
+def solve__internal(antecedent, succedent, exists_mode):    
+    pprint(antecedent, succedent)
+
     if contraversial(antecedent, succedent):
         return True
 
@@ -28,15 +34,12 @@ def resolve(antecedent, succedent, exists_mode):
 def check_side(antecedent, succedent, reversed, exists_mode):
     iterable = succedent if reversed else antecedent
     for i in iterable:
-        if isinstance(i, ast.Substitute):
+        if isinstance(i, ast.Substitution):
 
-            copy = succedent.copy() if reversed else antecedent.copy()
-            extended = antecedent.copy() if reversed else succedent.copy()
+            search_area = antecedent.copy() if reversed else succedent.copy()
+            search_area.append(i)
 
-            copy.remove(i)
-            extended.extend(list(map(transist, copy)))
-
-            for j in enumerate_available_substitutions(i, extended):
+            for j in enumerate_available_substitutions(i, search_area):
 
                 antecedent_next = antecedent.copy()
                 succedent_next = succedent.copy()
@@ -48,7 +51,7 @@ def check_side(antecedent, succedent, reversed, exists_mode):
                     antecedent_next.remove(i)
                     antecedent_next.append(j)
 
-                are_valid_branches = resolve(antecedent_next, succedent_next, reversed)
+                are_valid_branches = solve__internal(antecedent_next, succedent_next, reversed)
 
                 if reversed:
                     if are_valid_branches:
@@ -68,7 +71,7 @@ def check_side(antecedent, succedent, reversed, exists_mode):
 
             def check(x): return prepare_and_resolve(
                 antecedent, succedent, reversed, exists_mode, x)
-            func = i.eliminate() if reversed else i.introduce()
+            func = i.introduce_to_succedent() if reversed else i.introduce_to_antecedent()
             are_valid_branches = all(map(check, func))
 
             if not exists_mode and not are_valid_branches:
@@ -92,7 +95,7 @@ def prepare_and_resolve(antecedent, succedent, reversed, exists_mode, item):
     antecedent_next.extend(l)
     succedent_next.extend(r)
 
-    return resolve(antecedent_next, succedent_next, exists_mode)
+    return solve__internal(antecedent_next, succedent_next, exists_mode)
 
 
 def enumerate_available_substitutions(mask, array):
@@ -107,6 +110,7 @@ def enumerate_available_substitutions(mask, array):
 
 
 def traverse_expression_tree(source):
+    pprint([ast.Term('traverse')], [source])
     if isinstance(source, ast.Term):
         yield source
         if source.args is not None:
@@ -122,7 +126,7 @@ def traverse_expression_tree(source):
             yield item
     elif aware_recursion(source):
         for item in traverse_expression_tree(source.right):
-            if isinstance(item, ast.Term) and not item.name == source.left.name:
+            if isinstance(item, ast.Term) and not item == source.left:
                 yield item
     elif issubclass(type(source), ast.BinaryOp):
         for item in traverse_expression_tree(source.left):
@@ -133,15 +137,11 @@ def traverse_expression_tree(source):
 
 
 def aware_recursion(expr):
-    return isinstance(expr, ast.Forall) or isinstance(expr, ast.Exists) or isinstance(expr, ast.Substitute)
+    return isinstance(expr, ast.Forall) or isinstance(expr, ast.Exists) or isinstance(expr, ast.Substitution)
 
 
 def has_next(x):
     return isinstance(x, ast.Atom)
-
-
-def transist(x):
-    return x.argument if isinstance(x, ast.Negation) else ast.Negation(x)
 
 
 def contraversial(antecedent, succedent):

@@ -104,34 +104,34 @@ class BinaryOp(BaseBox):
 
 
 class Negation(UnaryOp):
-    def introduce(self):
+    def introduce_to_antecedent(self):
         return [(self, [], [self.argument])]
 
-    def eliminate(self):
+    def introduce_to_succedent(self):
         return [(self, [self.argument], [])]
 
 
 class Implication(BinaryOp):
-    def introduce(self):
+    def introduce_to_antecedent(self):
         return [(self, [], [self.left]), (self, [self.right], [])]
 
-    def eliminate(self):
+    def introduce_to_succedent(self):
         return [(self, [self.left], [self.right])]
 
 
 class Disjunction(BinaryOp):
-    def introduce(self):
+    def introduce_to_antecedent(self):
         return [(self, [self.left], []), (self, [self.right], [])]
 
-    def eliminate(self):
+    def introduce_to_succedent(self):
         return [(self, [], [self.left, self.right])]
 
 
 class Conjunction(BinaryOp):
-    def introduce(self):
+    def introduce_to_antecedent(self):
         return [(self, [self.left, self.right], [])]
 
-    def eliminate(self):
+    def introduce_to_succedent(self):
         return [(self, [], [self.left]), (self, [], [self.right])]
 
 
@@ -161,18 +161,12 @@ class Forall(BinaryOp):
 
         return False
 
-    def introduce(self):
+    def introduce_to_antecedent(self):
         global index
         index += 1
-        if self.depth < 1:
-            self.depth += 1
-            return [(
-                self, [Substitute(Term(f'_v{index}'), substitute(self.left, Term(f'_v{index}'), self.right)), self],
-                [])]
-        else:
-            return [(self, [Substitute(Term(f'_v{index}'), substitute(self.left, Term(f'_v{index}'), self.right))], [])]
+        return [(self, [Substitution(Term(f'_v{index}'), substitute(self.left, Term(f'_v{index}'), self.right))], [])]
 
-    def eliminate(self):
+    def introduce_to_succedent(self):
         global index
         index += 1
         return [(self, [], [substitute(self.left, Term(f'_c{index}'), self.right)])]
@@ -197,23 +191,18 @@ class Exists(BinaryOp):
 
         return False
 
-    def introduce(self):
+    def introduce_to_antecedent(self):
         global index
         index += 1
         return [(self, [substitute(self.left, Term(f'_c{index}'), self.right)], [])]
 
-    def eliminate(self):
+    def introduce_to_succedent(self):
         global index
         index += 1
-        if self.depth < 1:
-            self.depth += 1
-            return [(self, [],
-                     [Substitute(Term(f'_v{index}'), substitute(self.left, Term(f'_v{index}'), self.right)), self])]
-        else:
-            return [(self, [], [Substitute(Term(f'_v{index}'), substitute(self.left, Term(f'_v{index}'), self.right))])]
+        return [(self, [], [Substitution(Term(f'_v{index}'), substitute(self.left, Term(f'_v{index}'), self.right))])]
 
 
-class Substitute(BinaryOp):
+class Substitution(BinaryOp):
     def __init__(self, left, right):
         self.left = left
         self.right = right
@@ -241,7 +230,7 @@ def substitute(old, new, expr):
             res.args[i] = substitute(old, new, expr.args[i])
     elif issubclass(type(expr), UnaryOp):
         res.argument = substitute(old, new, res.argument)
-    elif isinstance(expr, Forall) or isinstance(expr, Exists) or isinstance(expr, Substitute):
+    elif isinstance(expr, Forall) or isinstance(expr, Exists) or isinstance(expr, Substitution):
         if expr.left != old:
             res.right = substitute(old, new, res.right)
         else:
