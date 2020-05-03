@@ -157,7 +157,7 @@ class Forall(BinaryOp):
         if isinstance(left, Term) and (left.args is None) and not isinstance(right, Term):
             self.left = left
             self.right = right
-            self.depth = 0
+            self.doubled = False
         else:
             if not (isinstance(left, Term) and (left.args is None)):
                 raise ValueError(
@@ -178,7 +178,11 @@ class Forall(BinaryOp):
     def introduce_to_antecedent(self):
         global index
         index += 1
-        return [(self, [Substitution(Term(f'_v{index}'), substitute(self.left, Term(f'_v{index}'), self.right))], [])]
+        if not self.doubled:
+            self.doubled = True
+            return [(self, [self, self], [])]
+        else:
+            return [(self, [Substitution(Term(f'_v{index}'), substitute(self.left, Term(f'_v{index}'), self.right))], [])]
 
     def introduce_to_succedent(self):
         global index
@@ -191,7 +195,7 @@ class Exists(BinaryOp):
         if isinstance(left, Term) and (left.args is None) and not isinstance(right, Term):
             self.left = left
             self.right = right
-            self.depth = 0
+            self.doubled = False
         else:
             raise ValueError(
                 f'In {self.__class__.__name__}, {left.show()} should be Var and {right.show()} should be Expr.')
@@ -213,7 +217,11 @@ class Exists(BinaryOp):
     def introduce_to_succedent(self):
         global index
         index += 1
-        return [(self, [], [Substitution(Term(f'_v{index}'), substitute(self.left, Term(f'_v{index}'), self.right))])]
+        if not self.doubled:
+            self.doubled = True
+            return [(self, [], [self, self])]
+        else:
+            return [(self, [], [Substitution(Term(f'_v{index}'), substitute(self.left, Term(f'_v{index}'), self.right))])]
 
 
 class Substitution(BinaryOp):

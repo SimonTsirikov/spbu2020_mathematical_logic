@@ -38,8 +38,7 @@ def check_side(antecedent, succedent, reversed, exists_mode):
     for i in iterable:
         if isinstance(i, ast.Substitution):
 
-            search_area = antecedent.copy() if reversed else succedent.copy()
-            search_area.append(i)
+            search_area = antecedent + succedent
 
             for j in enumerate_available_substitutions(i, search_area):
 
@@ -48,10 +47,10 @@ def check_side(antecedent, succedent, reversed, exists_mode):
 
                 if reversed:
                     succedent_next.remove(i)
-                    succedent_next.append(j)
+                    succedent_next.insert(0, j)
                 else:
                     antecedent_next.remove(i)
-                    antecedent_next.append(j)
+                    antecedent_next.insert(0, j)
 
                 are_valid_branches = solve__internal(antecedent_next, succedent_next, reversed)
 
@@ -66,10 +65,10 @@ def check_side(antecedent, succedent, reversed, exists_mode):
             return not reversed, exists_mode
 
         elif not isinstance(i, ast.Atom):
-            if not reversed and isinstance(i, ast.Exists):
-                exists_mode = True
-            elif reversed and isinstance(i, ast.Forall):
-                exists_mode = False
+            # if not reversed and isinstance(i, ast.Exists):
+            #     exists_mode = True
+            # elif reversed and isinstance(i, ast.Forall):
+            #     exists_mode = False
 
             def check(x): return prepare_and_resolve(
                 antecedent, succedent, reversed, exists_mode, x)
@@ -94,10 +93,10 @@ def prepare_and_resolve(antecedent, succedent, reversed, exists_mode, item):
     else:
         antecedent_next.remove(i)
 
-    antecedent_next.extend(l)
-    succedent_next.extend(r)
+    antecedent_next1 = l + antecedent_next
+    succedent_next1 = r + succedent_next
 
-    return solve__internal(antecedent_next, succedent_next, exists_mode)
+    return solve__internal(antecedent_next1, succedent_next1, exists_mode)
 
 
 def enumerate_available_substitutions(mask, array):

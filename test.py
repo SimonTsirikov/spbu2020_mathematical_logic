@@ -72,7 +72,7 @@ assert pparse(r'x ! (P(x) -> (x ! P(x)))') == Exists(Term('x'), Implication(Atom
 
 # logic tests
 
-assert solve(r'x ! (P(x) -> (x ! P(x)))')
+assert solve(r'x ! (P(x) -> (x + P(x)))')
 assert solve(r'a + (P(a)\/~P(a))')
 assert solve(r'a ! (P(a)\/~P(b))')
 assert not solve(r'a + (P(a)\/~P(b))')
@@ -80,4 +80,4 @@ assert solve(r'a + (P(a)->P(a))')
 assert solve(r'a ! (P(a)->P(b))')
 assert solve(r'a ! b ! (P(a)\/~P(b))')
 assert solve(r'a ! b ! (P(a)/\P(b)\/~P(c))')
-assert not solve(r'x ! (P(x) -> P(F(x)))')
+assert solve(r'x ! (P(x) -> P(F(x)))')
