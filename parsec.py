@@ -1,3 +1,5 @@
+import sys
+
 from pyparsing import *
 import ast
 
@@ -54,6 +56,9 @@ def parse(p):
     else:
         raise SyntaxError
 
+
+ParserElement.enablePackrat()
+sys.setrecursionlimit(3000)
 
 # Parenthesis, dont show in result (function of suppress)
 open_par = Literal("(").suppress()
