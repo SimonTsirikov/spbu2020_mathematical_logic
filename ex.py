@@ -36,6 +36,8 @@ def parse(p):
             return parse([ast.Conjunction(parse(p[0]), parse(p[2]))] + p[3:])
         elif p[1] == disj:
             return parse([ast.Disjunction(parse(p[0]), parse(p[2]))] + p[3:])
+        else:
+            raise SyntaxError
 
     elif len(p) == 2:
         if 'F' in p[0]:
@@ -44,9 +46,14 @@ def parse(p):
             return ast.Atom(p[0], [parse(i) for i in p[1]])
         elif p[0] == neg:
             return ast.Negation(parse(p[1]))
+        else:
+            raise SyntaxError
+    
+    elif len(p) == 1:
+        return parse(p[0])
     
     else:
-        return parse(p[0])
+            raise SyntaxError
 
 
 # Parenthesis, dont show in result (function of suppress)
