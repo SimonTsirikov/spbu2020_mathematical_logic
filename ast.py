@@ -9,7 +9,8 @@ class Term(BaseBox):
             for item in args:
                 if not isinstance(item, Term):
                     raise ValueError(
-                        f'Inappropriate argument for "{self.name}": {item.show()} should be Term, not {item.__class__.__name__}.')
+                        f'Inappropriate argument for '
+                        f'"{self.name}": {item.show()} should be Term, not {item.__class__.__name__}.')
 
     def __eq__(self, other):
         if self.__class__ == other.__class__ and self.name == other.name:
@@ -39,7 +40,8 @@ class Atom(BaseBox):
         for item in args:
             if not isinstance(item, Term):
                 raise ValueError(
-                    f'Inappropriate argument for "{self.name}": {item.show()} should be Term, not {item.__class__.__name__}.')
+                    f'Inappropriate argument for '
+                    f'"{self.name}": {item.show()} should be Term, not {item.__class__.__name__}.')
 
     def __eq__(self, other):
         if self.__class__ == other.__class__ and self.name == other.name:

@@ -1,4 +1,3 @@
-
 from pyparsing import *
 import ast
 
@@ -21,7 +20,7 @@ def parse(p):
             return p
         else:
             return ast.Term(p)
-    
+
     elif issubclass(type(p), ast.BaseBox):
         return p
 
@@ -36,6 +35,8 @@ def parse(p):
             return parse([ast.Conjunction(parse(p[0]), parse(p[2]))] + p[3:])
         elif p[1] == disj:
             return parse([ast.Disjunction(parse(p[0]), parse(p[2]))] + p[3:])
+        else:
+            raise SyntaxError
 
     elif len(p) == 2:
         if 'F' in p[0]:
@@ -44,9 +45,14 @@ def parse(p):
             return ast.Atom(p[0], [parse(i) for i in p[1]])
         elif p[0] == neg:
             return ast.Negation(parse(p[1]))
-    
-    else:
+        else:
+            raise SyntaxError
+
+    elif len(p) == 1:
         return parse(p[0])
+
+    else:
+        raise SyntaxError
 
 
 # Parenthesis, dont show in result (function of suppress)
@@ -62,7 +68,6 @@ atom_name = Word('P', srange('[0-9]'), max=100)
 atom = Forward()
 atom <<= Group(atom_name + Group(open_par + Optional(delimitedList(atom | "''" | term | Word(alphanums + '_')), ''
                                                      ) + close_par))
-
 
 ALL = Literal(for_all)
 EXS = Literal(exist)
