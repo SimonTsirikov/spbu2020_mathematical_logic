@@ -31,6 +31,6 @@ Conjunction ::= Expr '/\' Expr
 Disjunction ::= Expr '\/' Expr
 Implication ::= Expr '->' Expr
 
-Forall ::= '+' Var Expr
-Exists ::= '!' Var Expr
+Forall ::= Var '+' Expr
+Exists ::= Var '!' Expr
 ```

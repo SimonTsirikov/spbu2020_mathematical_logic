@@ -1,7 +1,11 @@
 
 from pyparsing import *
-from parsec import parser
 import ast
+
+
+def pparse(string):
+    return parse(expr.parseString(string))
+
 
 conj = '/\\'
 disj = '\\/'
@@ -17,20 +21,21 @@ def parse(p):
             return p
         else:
             return ast.Term(p)
+    
     elif issubclass(type(p), ast.BaseBox):
         return p
 
     elif len(p) >= 3:
-        if p[1] == disj:
-            return parse([ast.Disjunction(parse(p[0]), parse(p[2]))] + p[3:])
-        elif p[1] == conj:
-            return parse([ast.Conjunction(parse(p[0]), parse(p[2]))] + p[3:])
+        if p[1] == for_all:
+            return parse([ast.Forall(parse(p[0]), parse(p[2]))] + p[3:])
+        elif p[1] == exist:
+            return parse([ast.Exists(parse(p[0]), parse(p[2]))] + p[3:])
         elif p[-2] == imp:
             return parse(p[:-4] + [ast.Implication(parse(p[-3]), parse(p[-1]))])
-        elif p[0] == exist:
-            return parse([ast.Exists(parse(p[1]), parse(p[2]))] + p[3:])
-        elif p[0] == for_all:
-            return parse([ast.Forall(parse(p[1]), parse(p[2]))] + p[3:])
+        elif p[1] == conj:
+            return parse([ast.Conjunction(parse(p[0]), parse(p[2]))] + p[3:])
+        elif p[1] == disj:
+            return parse([ast.Disjunction(parse(p[0]), parse(p[2]))] + p[3:])
 
     elif len(p) == 2:
         if 'F' in p[0]:
@@ -39,6 +44,7 @@ def parse(p):
             return ast.Atom(p[0], [parse(i) for i in p[1]])
         elif p[0] == neg:
             return ast.Negation(parse(p[1]))
+    
     else:
         return parse(p[0])
 
@@ -58,17 +64,22 @@ atom <<= Group(atom_name + Group(open_par + Optional(delimitedList(atom | "''" |
                                                      ) + close_par))
 
 
+ALL = Literal(for_all)
+EXS = Literal(exist)
+NEG = Literal(neg)
+IMP = Literal(imp)
 CONJ = Literal(conj)
 DISJ = Literal(disj)
-NEG = Literal(neg)
-ALL = Literal(for_all)
-IMP = Literal(imp)
+
+legal_expr = atom | Word(alphanums + '_')
 
 # operation priority
 operation = infixNotation(
-    atom,
+    legal_expr,
     [
         (NEG, 1, opAssoc.RIGHT),
+        (ALL, 2, opAssoc.LEFT),
+        (EXS, 2, opAssoc.LEFT),
         (IMP, 2, opAssoc.RIGHT),
         (CONJ, 2, opAssoc.LEFT),
         (DISJ, 2, opAssoc.LEFT)
@@ -78,10 +89,3 @@ operation = infixNotation(
 
 expr = Forward()
 expr <<= term | operation | Group(for_all + Word(alphanums + '_') + expr) | Group(exist + Word(alphanums + '_') + expr)
-
-expression = expr.parseString(r'+a ~P0(a)->(P(f)\/~P1(b))/\P2(c)->P3(d)')
-
-print(expression)
-
-# result = parse(expression)
-# print(result.show())
