@@ -65,11 +65,6 @@ def check_side(antecedent, succedent, reversed, exists_mode):
             return not reversed, exists_mode
 
         elif not isinstance(i, ast.Atom):
-            # if not reversed and isinstance(i, ast.Exists):
-            #     exists_mode = True
-            # elif reversed and isinstance(i, ast.Forall):
-            #     exists_mode = False
-
             def check(x): return prepare_and_resolve(
                 antecedent, succedent, reversed, exists_mode, x)
             func = i.introduce_to_succedent() if reversed else i.introduce_to_antecedent()
