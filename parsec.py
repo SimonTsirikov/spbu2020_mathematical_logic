@@ -42,7 +42,7 @@ def parse(p):
         if 'F' in p[0]:
             return ast.Term(parse(p[0]), [parse(i) for i in p[1]])
         elif 'P' in p[0]:
-            return ast.Atom(p[0], [parse(i) for i in p[1]])
+            return ast.Atom(p[0], [parse(i) for i in p[1] if i != ''])
         elif p[0] == neg:
             return ast.Negation(parse(p[1]))
         else:

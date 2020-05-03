@@ -3,6 +3,8 @@ from parsec import pparse
 from solver import solve
 
 # parsing test
+assert pparse(r'P()\/P(a)\/P(F(a))\/P(F(a,b))') == Disjunction(Disjunction(Disjunction(Atom('P', []),
+    Atom('P', [Term('a')])), Atom('P', [Term('F', [Term('a')])])), Atom('P', [Term('F', [Term('a'), Term('b')])]))
 
 assert pparse(r'~P(a)') == Negation(Atom('P', [Term('a')]))
 assert pparse(r'P(a)\/P1(b)') == Disjunction(Atom('P', [Term('a')]), Atom('P1', [Term('b')]))
