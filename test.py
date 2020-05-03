@@ -2,7 +2,6 @@ from ast import *
 from parsec import pparse
 from solver import solve
 
-
 # parsing test
 
 assert pparse(r'P()\/P(a)\/P(F(a))\/P(F(a,b))') == Disjunction(Disjunction(Disjunction(Atom('P', []),
@@ -81,3 +80,4 @@ assert solve(r'a + (P(a)->P(a))')
 assert solve(r'a ! (P(a)->P(b))')
 assert solve(r'a ! b ! (P(a)\/~P(b))')
 assert solve(r'a ! b ! (P(a)/\P(b)\/~P(c))')
+assert not solve(r'x ! (P(x) -> P(F(x)))')

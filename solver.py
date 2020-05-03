@@ -110,7 +110,6 @@ def enumerate_available_substitutions(mask, array):
 
 
 def traverse_expression_tree(source):
-    pprint([ast.Term('traverse')], [source])
     if isinstance(source, ast.Term):
         yield source
         if source.args is not None:

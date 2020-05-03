@@ -225,6 +225,9 @@ def substitute(old, new, expr):
     res = expr.copy()
     if expr == old:
         res = new
+    elif isinstance(expr, Term) and expr.args is not None:
+        for i in range(0, len(expr.args)):
+            res.args[i] = substitute(old, new, expr.args[i])
     elif isinstance(expr, Atom):
         for i in range(0, len(expr.args)):
             res.args[i] = substitute(old, new, expr.args[i])
