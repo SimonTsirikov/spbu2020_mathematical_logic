@@ -5,7 +5,7 @@ import ast
 
 
 def pparse(string):
-    return parse(expr.parseString(string))
+    return parse(operation.parseString(string))
 
 
 conj = '/\\'
@@ -61,6 +61,8 @@ ParserElement.enablePackrat()
 sys.setrecursionlimit(3000)
 
 # Parenthesis, dont show in result (function of suppress)
+var = Word(srange('[a-z]'), max=100)
+
 open_par = Literal("(").suppress()
 close_par = Literal(")").suppress()
 
@@ -81,7 +83,7 @@ IMP = Literal(imp)
 CONJ = Literal(conj)
 DISJ = Literal(disj)
 
-legal_expr = atom | Word(alphanums + '_')
+legal_expr = atom | var
 
 # operation priority
 operation = infixNotation(
@@ -96,6 +98,3 @@ operation = infixNotation(
 
     ],
 )
-
-expr = Forward()
-expr <<= term | operation | Group(for_all + Word(alphanums + '_') + expr) | Group(exist + Word(alphanums + '_') + expr)
