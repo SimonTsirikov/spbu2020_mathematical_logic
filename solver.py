@@ -6,27 +6,27 @@ def solve(string):
     expr = pparse(string)
     print()
     print(f'Sequent for {expr.show()}:')
-    return solve__internal([], [expr], False)
+    return solve__internal([], [expr], False, 0)
 
 
-def pprint(a, b):
-    print(f"{', '.join(map(lambda x: x.show(), a))} |- {', '.join(map(lambda x: x.show(), b))}")
+def pprint(depth, a, b):
+    print(f"{depth}) {', '.join(map(lambda x: x.show(), a))} |- {', '.join(map(lambda x: x.show(), b))}")
 
 
-def solve__internal(antecedent_, succedent_, exists_mode):    
+def solve__internal(antecedent_, succedent_, exists_mode, depth):    
     antecedent = [i for i in antecedent_ if not isinstance(i, ast.Substitution)] + [i for i in antecedent_ if isinstance(i, ast.Substitution)]
     succedent = [i for i in succedent_ if not isinstance(i, ast.Substitution)] + [i for i in succedent_ if isinstance(i, ast.Substitution)]
     
-    pprint(antecedent, succedent)
+    pprint(depth, antecedent, succedent)
 
     if contraversial(antecedent, succedent):
         return True
 
-    are_valid_branches_left, exists_mode_1 = check_side(antecedent, succedent, False, exists_mode)
+    are_valid_branches_left, exists_mode_1 = check_side(antecedent, succedent, False, exists_mode, depth)
     if are_valid_branches_left is not None:
         return are_valid_branches_left
 
-    are_valid_branches_right, exists_mode_2 = check_side(antecedent, succedent, True, exists_mode_1)
+    are_valid_branches_right, exists_mode_2 = check_side(antecedent, succedent, True, exists_mode_1, depth)
     if are_valid_branches_right is not None:
         return are_valid_branches_right
 
@@ -36,7 +36,7 @@ def solve__internal(antecedent_, succedent_, exists_mode):
         return True
 
 
-def check_side(antecedent, succedent, reversed, exists_mode):
+def check_side(antecedent, succedent, reversed, exists_mode, depth):
  
     iterable = succedent if reversed else antecedent
     
@@ -57,7 +57,7 @@ def check_side(antecedent, succedent, reversed, exists_mode):
                     antecedent_next.remove(i)
                     antecedent_next.insert(0, j)
 
-                are_valid_branches = solve__internal(antecedent_next, succedent_next, reversed)
+                are_valid_branches = solve__internal(antecedent_next, succedent_next, reversed, depth + 1)
 
                 if reversed:
                     if are_valid_branches:
@@ -71,7 +71,7 @@ def check_side(antecedent, succedent, reversed, exists_mode):
 
         elif not isinstance(i, ast.Atom):
             def check(x): return prepare_and_resolve(
-                antecedent, succedent, reversed, exists_mode, x)
+                antecedent, succedent, reversed, exists_mode, x, depth)
             func = i.introduce_to_succedent() if reversed else i.introduce_to_antecedent()
             are_valid_branches = all(map(check, func))
 
@@ -82,7 +82,7 @@ def check_side(antecedent, succedent, reversed, exists_mode):
     return None, exists_mode
 
 
-def prepare_and_resolve(antecedent, succedent, reversed, exists_mode, item):
+def prepare_and_resolve(antecedent, succedent, reversed, exists_mode, item, depth):
     i, l, r = item
 
     antecedent_next = antecedent.copy()
@@ -96,7 +96,7 @@ def prepare_and_resolve(antecedent, succedent, reversed, exists_mode, item):
     antecedent_next1 = l + antecedent_next
     succedent_next1 = r + succedent_next
 
-    return solve__internal(antecedent_next1, succedent_next1, exists_mode)
+    return solve__internal(antecedent_next1, succedent_next1, exists_mode, depth + 1)
 
 
 def enumerate_available_substitutions(mask, array):
