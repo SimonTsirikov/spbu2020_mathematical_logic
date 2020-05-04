@@ -13,7 +13,10 @@ def pprint(a, b):
     print(f"{', '.join(map(lambda x: x.show(), a))} |- {', '.join(map(lambda x: x.show(), b))}")
 
 
-def solve__internal(antecedent, succedent, exists_mode):    
+def solve__internal(antecedent_, succedent_, exists_mode):    
+    antecedent = [i for i in antecedent_ if not isinstance(i, ast.Substitution)] + [i for i in antecedent_ if isinstance(i, ast.Substitution)]
+    succedent = [i for i in succedent_ if not isinstance(i, ast.Substitution)] + [i for i in succedent_ if isinstance(i, ast.Substitution)]
+    
     pprint(antecedent, succedent)
 
     if contraversial(antecedent, succedent):
@@ -34,7 +37,9 @@ def solve__internal(antecedent, succedent, exists_mode):
 
 
 def check_side(antecedent, succedent, reversed, exists_mode):
+ 
     iterable = succedent if reversed else antecedent
+    
     for i in iterable:
         if isinstance(i, ast.Substitution):
 
@@ -59,7 +64,7 @@ def check_side(antecedent, succedent, reversed, exists_mode):
                         return True, exists_mode
                 elif not exists_mode and not are_valid_branches:
                     return False, exists_mode
-                elif exists_mode and are_valid_branches:
+                elif are_valid_branches:
                     return True, exists_mode
 
             return not reversed, exists_mode
@@ -72,7 +77,7 @@ def check_side(antecedent, succedent, reversed, exists_mode):
 
             if not exists_mode and not are_valid_branches:
                 return False, exists_mode
-            elif exists_mode and are_valid_branches:
+            elif are_valid_branches:
                 return True, exists_mode
     return None, exists_mode
 
