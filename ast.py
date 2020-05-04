@@ -182,7 +182,7 @@ class Forall(BinaryOp):
             self.doubled = True
             return [(self, [self, self], [])]
         else:
-            return [(self, [Substitution(Term(f'_v{index}'), substitute(self.left, Term(f'_v{index}'), self.right))], [])]
+            return [(self, [Substitution(Term(f'_v{index}'), substitute(self.left, Term(f'_v{index}'), self.right), 'Forall')], [])]
 
     def introduce_to_succedent(self):
         global index
@@ -221,16 +221,24 @@ class Exists(BinaryOp):
             self.doubled = True
             return [(self, [], [self, self])]
         else:
-            return [(self, [], [Substitution(Term(f'_v{index}'), substitute(self.left, Term(f'_v{index}'), self.right))])]
+            return [(self, [], [Substitution(Term(f'_v{index}'), substitute(self.left, Term(f'_v{index}'), self.right), "Exists")])]
 
 
 class Substitution(BinaryOp):
-    def __init__(self, left, right):
+    def __init__(self, left, right, kind):
         self.left = left
         self.right = right
+        self.kind = kind
+
+    def copy(self):
+        return Substitution(self.left.copy(), self.right.copy(), self.kind)
+
 
     def show(self):
-        return f'({self.left.show()} in {self.right.show()})'
+        if self.kind == 'Exists':
+            return f'({self.left.show()} ! {self.right.show()})'
+        elif self.kind == 'Forall':
+            return f'({self.left.show()} + {self.right.show()})'
 
     def collision(self):
         global index

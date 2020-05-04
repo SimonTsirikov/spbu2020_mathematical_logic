@@ -114,11 +114,13 @@ def enumerate_available_substitutions(mask, array):
 
 def traverse_expression_tree(source):
     if isinstance(source, ast.Term):
-        yield source
+        if not contains(source, None):
+            yield source
         if source.args is not None:
             for arg in source.args:
                 for item in traverse_expression_tree(arg):
-                    yield item
+                    if not contains(item, None):
+                        yield item
     elif isinstance(source, ast.Atom):
         for arg in source.args:
             for item in traverse_expression_tree(arg):
@@ -128,7 +130,8 @@ def traverse_expression_tree(source):
             yield item
     elif aware_recursion(source):
         for item in traverse_expression_tree(source.right):
-            if isinstance(item, ast.Term) and not item == source.left:
+            # if isinstance(item, ast.Term) and not item == source.left:
+            if not contains(item, source.left):
                 yield item
     elif issubclass(type(source), ast.BinaryOp):
         for item in traverse_expression_tree(source.left):
@@ -136,6 +139,14 @@ def traverse_expression_tree(source):
         for item in traverse_expression_tree(source.right):
             yield item
     yield None
+
+
+def contains(box, item):
+    if isinstance(box, ast.Term):
+        if box.args is None:
+            return item == box
+        else:
+            return any(map(lambda x: contains(x, item), box.args))
 
 
 def aware_recursion(expr):
