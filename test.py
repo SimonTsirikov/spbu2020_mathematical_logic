@@ -24,17 +24,17 @@ assert pparse(r'P(a)/\(P1(b)/\P2(c))') == Conjunction(Atom('P', [Term('a')]),
 
 assert pparse(r'P(a)\/P1(b)/\P2(c)') == Disjunction(Atom('P', [Term('a')]),
                                                     Conjunction(Atom('P1', [Term('b')]), Atom('P2', [Term('c')])))
-assert pparse(r'P(a)\/P1(b)->P2(c)') == Disjunction(Atom('P', [Term('a')]),
-                                                    Implication(Atom('P1', [Term('b')]), Atom('P2', [Term('c')])))
-assert pparse(r'P(a)/\P1(b)->P2(c)') == Conjunction(Atom('P', [Term('a')]),
-                                                    Implication(Atom('P1', [Term('b')]), Atom('P2', [Term('c')])))
+assert pparse(r'P(a)\/P1(b)->P2(c)') == Implication(Disjunction(Atom('P', [Term('a')]),
+                                                    Atom('P1', [Term('b')])), Atom('P2', [Term('c')]))
+assert pparse(r'P(a)/\P1(b)->P2(c)') == Implication(Conjunction(Atom('P', [Term('a')]),
+                                                    Atom('P1', [Term('b')])), Atom('P2', [Term('c')]))
 
 assert pparse(r'P(a)/\P1(b)\/P2(c)') == Disjunction(Conjunction(Atom('P', [Term('a')]), Atom('P1', [Term('b')])),
                                                     Atom('P2', [Term('c')]))
-assert pparse(r'P(a)->P1(b)\/P2(c)') == Disjunction(Implication(Atom('P', [Term('a')]), Atom('P1', [Term('b')])),
-                                                    Atom('P2', [Term('c')]))
-assert pparse(r'P(a)->P1(b)/\P2(c)') == Conjunction(Implication(Atom('P', [Term('a')]), Atom('P1', [Term('b')])),
-                                                    Atom('P2', [Term('c')]))
+assert pparse(r'P(a)->P1(b)\/P2(c)') == Implication(Atom('P', [Term('a')]), Disjunction(Atom('P1', [Term('b')]),
+                                                    Atom('P2', [Term('c')])))
+assert pparse(r'P(a)->P1(b)/\P2(c)') == Implication(Atom('P', [Term('a')]), Conjunction(Atom('P1', [Term('b')]),
+                                                    Atom('P2', [Term('c')])))
 
 assert pparse(r'P(a)->P1(b)->P2(c)') == Implication(Atom('P', [Term('a')]),
                                                     Implication(Atom('P1', [Term('b')]), Atom('P2', [Term('c')])))
