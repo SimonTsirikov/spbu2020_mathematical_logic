@@ -64,7 +64,7 @@ def check_side(antecedent, succedent, reversed, exists_mode):
                         return True, exists_mode
                 elif not exists_mode and not are_valid_branches:
                     return False, exists_mode
-                elif are_valid_branches:
+                elif exists_mode and are_valid_branches:
                     return True, exists_mode
 
             return not reversed, exists_mode
